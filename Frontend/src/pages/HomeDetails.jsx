@@ -81,110 +81,130 @@ const images = getImageArray();
 
   // ================= MAIN UI =================
 
-  return (
-  <div className="max-w-6xl mx-auto px-6 py-8">
+return (
+  <div className="bg-gray-50 min-h-screen py-10">
+    <div className="max-w-6xl mx-auto px-6">
 
-    {/* IMAGE */}
-    <ImageGallery
-      images={images}
-    />
-
-    {/* HEADER */}
-    <div className="mb-8 border-b pb-6">
-      <h1 className="text-3xl font-bold">{home.title}</h1>
-      <p className="text-gray-500 mt-1">{home.address}</p>
-
-      {/* BASIC INFO */}
-      <div className="flex gap-4 text-sm text-gray-600 mt-3">
-        <span>{home.guests || 4} guests</span>
-        <span>{home.bedrooms || 2} bedrooms</span>
-        <span>{home.beds || 2} beds</span>
-        <span>{home.bathrooms || 1} bath</span>
-      </div>
-    </div>
-
-    {/* MAIN GRID */}
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-
-      {/* LEFT */}
-      <div className="md:col-span-2 space-y-10">
-
-        {/* DESCRIPTION */}
-        <section>
-          <h2 className="text-xl font-semibold mb-2">About this place</h2>
-          <p className="text-gray-700 leading-relaxed">
-            {home.description}
-          </p>
-        </section>
-
-        {/* HOST INFO */}
-        <section className="border-t pt-6">
-          <HostInfo host={home.owner} />
-        </section>
-
-        {/* AMENITIES */}
-        <section className="border-t pt-6">
-          <Amenities
-            amenities={
-              home.amenities || ["WiFi", "AC", "Kitchen", "Parking"]
-            }
-          />
-        </section>
-
-        {/* REVIEWS */}
-        <section className="border-t pt-6">
-          <Reviews
-            reviews={
-              home.reviews || [
-                { user: "Rahul", comment: "Great stay!" },
-                { user: "Amit", comment: "Very clean and comfortable." }
-              ]
-            }
-          />
-        </section>
-
+      {/* IMAGE */}
+      <div className="rounded-3xl overflow-hidden shadow-lg">
+        <ImageGallery images={images} />
       </div>
 
-      {/* RIGHT (BOOKING CARD) */}
-      <div className="sticky top-24 h-fit border rounded-2xl shadow-lg p-6">
+      {/* HEADER */}
+      <div className="mt-8 flex flex-col gap-3">
+        <h1 className="text-4xl font-extrabold text-gray-900">
+          {home.title}
+        </h1>
 
-        <h2 className="text-2xl font-bold">
-          ₹{home.price}
-          <span className="text-sm font-normal"> / night</span>
-        </h2>
+        <p className="text-gray-500 text-lg">{home.address}</p>
 
-        <p className="text-red-500 text-sm mt-1">
-          Only {home.roomsLeft || 3} rooms left
-        </p>
+        <div className="flex flex-wrap gap-4 text-sm text-gray-700 mt-2">
+          <span>👤 {home.guests || 4} guests</span>
+          <span>🛏 {home.bedrooms || 2} bedrooms</span>
+          <span>🛌 {home.beds || 2} beds</span>
+          <span>🛁 {home.bathrooms || 1} bath</span>
+        </div>
+      </div>
 
-        {/* DATE INPUTS */}
-        <div className="mt-4 space-y-3">
-          <input
-            type="date"
-            className="w-full border rounded-lg p-2"
-          />
-          <input
-            type="date"
-            className="w-full border rounded-lg p-2"
-          />
+      {/* GRID */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mt-10">
+
+        {/* LEFT */}
+        <div className="md:col-span-2 space-y-10">
+
+          {/* DESCRIPTION */}
+          <section className="bg-white p-6 rounded-2xl shadow-sm">
+            <h2 className="text-xl font-semibold mb-3">
+              About this place
+            </h2>
+            <p className="text-gray-700 leading-relaxed">
+              {home.description}
+            </p>
+          </section>
+
+          {/* HOST */}
+          <section className="bg-white p-6 rounded-2xl shadow-sm">
+            <HostInfo host={home.owner} />
+          </section>
+
+          {/* AMENITIES */}
+          <section className="bg-white p-6 rounded-2xl shadow-sm">
+            <Amenities
+              amenities={
+                home.amenities || ["WiFi", "AC", "Kitchen", "Parking"]
+              }
+            />
+          </section>
+
+          {/* REVIEWS */}
+          <section className="bg-white p-6 rounded-2xl shadow-sm">
+            <Reviews
+              reviews={
+                home.reviews || [
+                  { user: "Rahul", comment: "Great stay!" },
+                  { user: "Amit", comment: "Very clean and comfortable." }
+                ]
+              }
+            />
+          </section>
+
         </div>
 
-        <button className="bg-black hover:bg-gray-800 transition text-white w-full py-3 mt-5 rounded-xl font-semibold">
-          Reserve
-        </button>
+        {/* RIGHT - BOOKING CARD */}
+        <div className="sticky top-24 h-fit">
+          <div className="bg-white rounded-3xl shadow-xl p-6 border">
 
-        <p className="text-xs text-gray-400 text-center mt-2">
-          You won’t be charged yet
-        </p>
+            {/* PRICE */}
+            <div className="flex justify-between items-center">
+              <h2 className="text-3xl font-bold text-gray-900">
+                ₹{home.price}
+              </h2>
+              <span className="text-sm text-gray-500">/ night</span>
+            </div>
+
+            {/* URGENCY */}
+            <p className="text-red-500 text-sm mt-2 font-medium">
+              ⚡ Only {home.roomsLeft || 3} rooms left
+            </p>
+
+            {/* DATE */}
+            <div className="mt-5 space-y-3">
+              <input
+                type="date"
+                className="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-black"
+              />
+              <input
+                type="date"
+                className="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-black"
+              />
+            </div>
+
+            {/* CTA */}
+            <button className="bg-black hover:bg-gray-900 transition text-white w-full py-3 mt-6 rounded-xl font-semibold text-lg">
+              Reserve Now
+            </button>
+
+            <p className="text-xs text-gray-400 text-center mt-3">
+              No payment required yet
+            </p>
+
+          </div>
+        </div>
+
+      </div>
+
+      {/* SIMILAR */}
+      <div className="mt-16">
+        <h2 className="text-2xl font-bold mb-6">
+          🔥 Similar stays you might like
+        </h2>
+
+        <div className="bg-white p-6 rounded-2xl shadow-sm">
+          <SimilarHomes homes={home.similarHomes || []} />
+        </div>
       </div>
 
     </div>
-
-    {/* SIMILAR HOMES */}
-    <div className="mt-14 border-t pt-8">
-      <SimilarHomes homes={home.similarHomes || []} />
-    </div>
-
   </div>
 );
 }

@@ -20,7 +20,7 @@ router.get("/properties", getAllProperties);
 router.post("/properties",protect, upload.array("images"), createProperty);
 
 // Dynamic routes after
-router.get("/:id", getPropertyById);
+router.get("/properties/:id", getPropertyById);
 router.delete("/:id", protect, deleteProperty);
 router.put("/:id", protect, upload.array("images", 10), updateProperty);
 
