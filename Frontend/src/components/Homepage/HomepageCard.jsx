@@ -9,11 +9,13 @@ function HomeCard({ home, type = "featured" }) {
       <div className="relative">
         <img
           src={
-                home?.imageURL?.startsWith("http")
+                home?.images?.[0]
+                  ? `http://localhost:5000/uploads/${home.images[0]}`
+                  : home?.imageURL
                   ? home.imageURL
-                  : `http://localhost:3000/uploads/${home?.imageURL || ""}`
+                  : home?.image || ""
               }
-          alt={home.houseName}
+          alt={home.houseName || home.title}
           className="w-full h-52 object-cover group-hover:scale-105 transition duration-300"
         />
 
@@ -28,12 +30,12 @@ function HomeCard({ home, type = "featured" }) {
 
         {/* Title */}
         <h3 className="text-lg font-semibold text-gray-900 truncate">
-          {home.houseName}
+          {home.houseName || home.title}
         </h3>
 
         {/* Location */}
         <p className="text-sm text-gray-500">
-          📍 {home.city}
+          📍 {home.city || home.address || home.location}
         </p>
 
         {/* Price */}

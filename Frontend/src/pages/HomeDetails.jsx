@@ -21,7 +21,7 @@ function HomeDetails() {
         setError(null);
 
         const res = await fetch(
-          `http://localhost:3000/api/homes/${homeId}`
+          `http://localhost:5000/api/properties/${homeId}`
         );
 
         if (!res.ok) {
@@ -30,11 +30,7 @@ function HomeDetails() {
 
         const data = await res.json();
 
-        if (!data.success || !data.home) {
-          throw new Error("Home not found");
-        }
-
-        setHome(data.home);
+        setHome(data);
       } catch (err) {
         console.error("Fetch error:", err.message);
         setError(err.message);

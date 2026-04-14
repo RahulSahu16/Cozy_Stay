@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const HostForm = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -11,11 +14,67 @@ const HostForm = () => {
     rules: "",
     images: []
   });
-
+  const [loading, setLoading] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [propertyId, setPropertyId] = useState(null);
+  
   const amenitiesList = ["wifi", "ac", "parking", "tv", "fridge"];
+
+  useEffect(() => {
+    if (location.state?.property) {
+      const property = location.state.property;
+      setForm({
+        title: property.title || "",
+        description: property.description || "",
+        price: property.price || "",
+        address: property.address || "",
+        totalRooms: property.totalRooms || "",
+        amenities: property.amenities || [],
+        rules: property.rules || "",
+        images: [] // Can't populate files, user needs to re-upload
+      });
+      setIsEditing(true);
+      setPropertyId(property._id);
+    }
+  }, [location.state]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const generateDescription = async () => {
+  if (!form.title || !form.address || !form.price) {
+    alert("Fill title, location and price first");
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+    const res = await fetch("http://localhost:5000/api/generate-description", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(form),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || "Failed to generate description");
+    }
+
+    setForm((prev) => ({
+      ...prev,
+      description: data.description,
+    }));
+  } catch (err) {
+    console.error(err);
+    alert("Failed to generate description");
+  } finally {
+    setLoading(false);
+  }
   };
 
   const handleAmenities = (item) => {
@@ -36,44 +95,98 @@ const HostForm = () => {
     setForm({ ...form, images: [...e.target.files] });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(form);
+
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      alert("Please login first");
+      return;
+    }
+
+    // Prepare form data
+    const formData = new FormData();
+    formData.append("title", form.title);
+    formData.append("description", form.description);
+    formData.append("price", form.price);
+    formData.append("address", form.address);
+    formData.append("totalRooms", form.totalRooms);
+    formData.append("rules", form.rules);
+    form.amenities.forEach(amenity => formData.append("amenities", amenity));
+    form.images.forEach(image => formData.append("images", image));
+
+    try {
+      setLoading(true);
+      const url = isEditing 
+        ? `http://localhost:5000/api/properties/${propertyId}`
+        : "http://localhost:5000/api/properties";
+      const method = isEditing ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert(`Property ${isEditing ? 'updated' : 'submitted'} successfully!`);
+        if (isEditing) {
+          navigate("/AllHomes");
+        } else {
+          // Reset form
+          setForm({
+            title: "",
+            description: "",
+            price: "",
+            address: "",
+            totalRooms: "",
+            amenities: [],
+            rules: "",
+            images: []
+          });
+        }
+      } else {
+        alert(data.error || `Failed to ${isEditing ? 'update' : 'submit'} property`);
+      }
+    } catch (err) {
+      console.log(err);
+      alert(err.message || `Error ${isEditing ? 'updating' : 'submitting'} property`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex justify-center px-4 py-10">
+    <div className="min-h-screen bg-[#b5ae9d] flex justify-center px-4 py-10">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-3xl bg-white/10 backdrop-blur-lg p-8 rounded-2xl border border-white/20 space-y-6"
+        className="w-full max-w-3xl bg-[#d4c59d]/30 backdrop-blur-lg p-8 rounded-2xl border border-[#6f5e30] shadow-xl space-y-6"
       >
         <h2 className="text-3xl font-bold text-white text-center">
-          Host Your Property
+          {isEditing ? "Edit Your Property" : "Host Your Property"}
         </h2>
 
         {/* Title */}
         <input
           type="text"
           name="title"
+          value={form.title}
           placeholder="Property Title"
-          className="w-full p-3 rounded-xl bg-white/5 text-white border border-white/10"
+          className="w-full p-3 rounded-xl bg-[#b5ae9d]/20 text-white placeholder:text-gray-200 border border-[#b5ae9d]/30 focus:outline-none focus:ring-2 focus:ring-[#b5ae9d]"
           onChange={handleChange}
         />
 
-        {/* Description */}
-        <textarea
-          name="description"
-          placeholder="Description"
-          className="w-full p-3 rounded-xl bg-white/5 text-white border border-white/10"
-          onChange={handleChange}
-        />
 
         {/* Price */}
         <input
           type="number"
           name="price"
+          value={form.price}
           placeholder="Price per night"
-          className="w-full p-3 rounded-xl bg-white/5 text-white border border-white/10"
+          className="w-full p-3 rounded-xl bg-[#b5ae9d]/20 text-white placeholder:text-gray-200 border border-[#b5ae9d]/30 focus:outline-none focus:ring-2 focus:ring-[#b5ae9d]"
           onChange={handleChange}
         />
 
@@ -81,8 +194,9 @@ const HostForm = () => {
         <input
           type="text"
           name="address"
+          value={form.address}
           placeholder="Location"
-          className="w-full p-3 rounded-xl bg-white/5 text-white border border-white/10"
+          className="w-full p-3 rounded-xl bg-[#b5ae9d]/20 text-white placeholder:text-gray-200 border border-[#b5ae9d]/30 focus:outline-none focus:ring-2 focus:ring-[#b5ae9d]"
           onChange={handleChange}
         />
 
@@ -90,8 +204,9 @@ const HostForm = () => {
         <input
           type="number"
           name="totalRooms"
+          value={form.totalRooms}
           placeholder="Total Rooms"
-          className="w-full p-3 rounded-xl bg-white/5 text-white border border-white/10"
+          className="w-full p-3 rounded-xl bg-[#b5ae9d]/20 text-white placeholder:text-gray-200 border border-[#b5ae9d]/30 focus:outline-none focus:ring-2 focus:ring-[#b5ae9d]"
           onChange={handleChange}
         />
 
@@ -104,11 +219,11 @@ const HostForm = () => {
                 type="button"
                 key={item}
                 onClick={() => handleAmenities(item)}
-                className={`px-4 py-2 rounded-full border 
+                className={`px-4 py-2 rounded-full border transition-all
                 ${
                   form.amenities.includes(item)
-                    ? "bg-blue-500 text-white"
-                    : "bg-white/5 text-gray-300"
+                    ? "bg-[#b5ae9d] text-[#4a3f1d]"
+                    : "bg-transparent text-white border-[#b5ae9d]/40"
                 }`}
               >
                 {item}
@@ -116,6 +231,15 @@ const HostForm = () => {
             ))}
           </div>
         </div>
+        
+        {/* Rules */}
+        <textarea
+          name="rules"
+          value={form.rules}
+          placeholder="Property Rules"
+          className="w-full p-3 rounded-xl bg-[#b5ae9d]/20 text-white placeholder:text-gray-200 border border-[#b5ae9d]/30 focus:outline-none focus:ring-2 focus:ring-[#b5ae9d]"
+          onChange={handleChange}
+        />
 
         {/* Images */}
         <div>
@@ -124,24 +248,35 @@ const HostForm = () => {
             type="file"
             multiple
             onChange={handleImageUpload}
-            className="text-gray-300"
+            className="text-white file:bg-[#b5ae9d] file:text-black file:px-4 file:py-2 file:rounded-lg file:border-none"
           />
         </div>
-
-        {/* Rules */}
+        
+        {/* Description */}
+        
         <textarea
-          name="rules"
-          placeholder="Property Rules"
-          className="w-full p-3 rounded-xl bg-white/5 text-white border border-white/10"
+          name="description"
+          value={form.description}
+          placeholder="Description"
+          className="w-full p-3 rounded-xl bg-[#b5ae9d]/20 text-white placeholder:text-gray-200 border border-[#b5ae9d]/30 focus:outline-none focus:ring-2 focus:ring-[#b5ae9d]"
           onChange={handleChange}
         />
+        
+        <button
+          type="button"
+          onClick={generateDescription}
+          disabled={loading}
+          className="bg-[#836f39] text-white px-4 py-2 rounded-lg hover:bg-[#6f5e30] transition disabled:opacity-50"
+        >
+          {loading ? "Generating..." : "✨ Generate with AI"}
+        </button>
 
         {/* Submit */}
-        <button
+        <button 
           type="submit"
-          className="w-full py-3 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-semibold"
+          className="w-full py-3 rounded-xl bg-[#b5ae9d] hover:bg-[#a39c8d] text-black font-semibold transition-all"
         >
-          Submit Property
+          {isEditing ? "Update Property" : "Submit Property"}
         </button>
       </form>
     </div>

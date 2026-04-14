@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import cors from "cors";
 import homeRoutes from "./routes/homeRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import aiRoutes from "./routes/aiRoutes.js";
+import propertyRoutes from "./routes/propertyRoutes.js";
 
 dotenv.config();
 
@@ -12,8 +14,11 @@ const app = express();
 // middleware
 app.use(cors());
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 app.use("/api/homes", homeRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api", aiRoutes);
+app.use("/api/properties", propertyRoutes);
 
 // ✅ MongoDB Connection
 mongoose.connect(process.env.Mongo_DB_URL)
