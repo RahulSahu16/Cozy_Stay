@@ -6,6 +6,7 @@ import homeRoutes from "./routes/homeRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
 import propertyRoutes from "./routes/propertyRoutes.js";
+import bookingRoutes from "./routes/bookingRoutes.js";
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use("/api/homes", homeRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api", aiRoutes);
 app.use("/api", propertyRoutes);
+app.use("/api/booking", bookingRoutes);
 
 // ✅ MongoDB Connection
 mongoose.connect(process.env.Mongo_DB_URL)
@@ -55,5 +57,5 @@ app.get("/test-db", async (req, res) => {
 // server start
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port https://localhost:${PORT}`);
+  console.log(`Server running on port https://localhost:${PORT}`);
 });

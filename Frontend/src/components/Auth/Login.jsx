@@ -22,6 +22,7 @@ export default function Login({ switchToSignup }) {
       const data = await login(email, password);
       localStorage.setItem("authUser", JSON.stringify(data.user));
       localStorage.setItem("authToken", data.token);
+      localStorage.setItem("userEmail", data.user.email);
       window.dispatchEvent(new Event("authChanged"));
       navigate("/");
     } catch (error) {
