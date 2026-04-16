@@ -6,6 +6,7 @@ import HomeDetails from "./pages/HomeDetails";
 import AuthPage from "./pages/AuthPage";
 import HostForm from "./components/Host Form/HostFrom";
 import FavouritesPage from "./pages/Favourites";
+import SearchCity from "./pages/SearchCity";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/homes/:homeId" element={<HomeDetails />} />
         <Route path="/login" element={<AuthPage />} />
         <Route path="/host/add-home" element={<HostForm />} />
+        <Route path="/search" element={<SearchCity />} />
       </Routes>
     </BrowserRouter>
   );

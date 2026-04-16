@@ -14,6 +14,16 @@ const bookingSchema = new mongoose.Schema(
       required: true,
     },
 
+    checkIn: {
+      type: Date,
+      required: true,
+    },
+
+    checkOut: {
+      type: Date,
+      required: true,
+    },
+
     roomsBooked: {
       type: Number,
       required: true,
@@ -30,13 +40,8 @@ const bookingSchema = new mongoose.Schema(
       default: "pending",
     },
 
-    paymentId: {
-      type: String,
-    },
-
-    orderId: {
-      type: String,
-    },
+    paymentId: String,
+    orderId: String,
   },
   { timestamps: true }
 );
