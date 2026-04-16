@@ -9,18 +9,24 @@ function HomeCard({ home, type = "featured" }) {
       <div className="relative">
         <img
           src={
-                home?.images?.[0]
-                  ? `http://localhost:5000/uploads/${home.images[0]}`
-                  : home?.imageURL
-                  ? home.imageURL
-                  : home?.image || ""
-              }
+            home?.images?.[0]
+              ? home.images[0].startsWith("http")
+                ? home.images[0]
+                : `http://localhost:5000/uploads/${home.images[0]}`
+              : home?.imageURL
+              ? home.imageURL
+              : home?.image || "https://via.placeholder.com/400x300?text=House"
+          }
           alt={home.houseName || home.title}
           className="w-full h-52 object-cover group-hover:scale-105 transition duration-300"
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = "https://via.placeholder.com/400x300?text=House";
+          }}
         />
 
         {/* Rating badge */}
-        <div className="absolute top-3 right-3 bg-black px-2 py-1 text-xs font-semibold rounded-md shadow">
+        <div className="absolute top-3 right-3 bg-white px-2 py-1 text-xs font-semibold rounded-md shadow">
           ⭐ {home.rating || 4.5}
         </div>
       </div>

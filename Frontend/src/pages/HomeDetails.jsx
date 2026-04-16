@@ -185,8 +185,10 @@ function HomeDetails() {
   // ================= IMAGES =================
   const images =
     home.images && home.images.length > 0
-      ? home.images.map(
-          (img) => `http://localhost:5000/uploads/${img}`
+      ? home.images.map((img) =>
+          img.startsWith("http")
+            ? img
+            : `http://localhost:5000/uploads/${img}`
         )
       : ["https://via.placeholder.com/800x400?text=No+Image"];
 
