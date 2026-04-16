@@ -49,7 +49,7 @@ function SearchResults() {
       }
     };
 
-    if (city && checkIn && checkOut) {
+    if (city || (checkIn && checkOut)) {
       fetchResults();
     } else {
       setHomes([]);

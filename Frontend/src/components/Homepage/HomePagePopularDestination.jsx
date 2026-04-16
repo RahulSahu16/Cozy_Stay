@@ -14,7 +14,7 @@ function PopularDestinations() {
   ];
 
   const handleClick = (city) => {
-    navigate(`/homes?city=${city.toLowerCase()}`);
+    navigate(`/search?city=${city.toLowerCase()}`);
   };
 
   return (
