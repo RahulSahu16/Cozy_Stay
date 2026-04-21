@@ -5,7 +5,14 @@ import crypto from "crypto";
 
 export const createBooking = async (req, res) => {
   try {
-    const { propertyId, roomsBooked } = req.body;
+    const { propertyId, roomsBooked, checkIn, checkOut } = req.body;
+
+    // Validate required fields
+    if (!checkIn || !checkOut) {
+      return res.status(400).json({
+        message: "checkIn and checkOut dates are required"
+      });
+    }
 
     // 1. Property fetch karo
     const property = await Property.findById(propertyId);
@@ -21,13 +28,31 @@ export const createBooking = async (req, res) => {
       });
     }
 
-    // 3. Price calculate karo
+    // 3. Validate dates
+    const checkInDate = new Date(checkIn);
+    const checkOutDate = new Date(checkOut);
+
+    if (checkInDate >= checkOutDate) {
+      return res.status(400).json({
+        message: "Check-out date must be after check-in date"
+      });
+    }
+
+    if (checkInDate < new Date()) {
+      return res.status(400).json({
+        message: "Check-in date cannot be in the past"
+      });
+    }
+
+    // 4. Price calculate karo
     const totalPrice = property.price * roomsBooked;
 
-    // 4. Booking create (pending)
+    // 5. Booking create (pending)
     const booking = await Booking.create({
       userId: req.user.id, // auth middleware se aayega
       propertyId,
+      checkIn: checkInDate,
+      checkOut: checkOutDate,
       roomsBooked,
       totalPrice,
     });
