@@ -4,6 +4,7 @@ import { FaEdit, FaHeart } from "react-icons/fa";
 import { searchProperties } from "../../services/propertyService";
 import { useAuth } from "../../hooks/useAuth";
 import { useFavourites } from "../../hooks/useFavourites";
+import { getUploadUrl } from "../../utils/assetUrls";
 
 function SearchResults() {
   const location = useLocation();
@@ -47,9 +48,7 @@ function SearchResults() {
 
   const getImageUrl = (home) => {
     if (home.images && home.images.length > 0) {
-      return home.images[0].startsWith("http")
-        ? home.images[0]
-        : `${import.meta.env.VITE_UPLOADS_URL || "http://localhost:5000/uploads"}/${home.images[0]}`;
+      return getUploadUrl(home.images[0]);
     }
     return (
       home.imageURL ||

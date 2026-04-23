@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { getUploadUrl } from "../../utils/assetUrls";
 
 function SimilarHomes({ homes }) {
   const navigate = useNavigate();
@@ -18,9 +19,7 @@ function SimilarHomes({ homes }) {
       <div className="grid md:grid-cols-3 gap-6">
         {homes.map((item) => {
           const image = item.images?.[0]
-            ? item.images[0].startsWith("http")
-              ? item.images[0]
-              : `http://localhost:5000/uploads/${item.images[0]}`
+            ? getUploadUrl(item.images[0])
             : "https://via.placeholder.com/640x480?text=House";
 
           return (

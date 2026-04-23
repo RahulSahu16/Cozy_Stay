@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Bot, Send, Sparkles, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { askCozyStayAssistant } from "../../services/aiService";
+import { getUploadUrl } from "../../utils/assetUrls";
 
 const starterMessages = [
   {
@@ -19,9 +20,7 @@ const quickPrompts = [
 
 const getImageUrl = (home) => {
   if (home?.images?.length > 0) {
-    return home.images[0].startsWith("http")
-      ? home.images[0]
-      : `${import.meta.env.VITE_UPLOADS_URL || "http://localhost:5000/uploads"}/${home.images[0]}`;
+    return getUploadUrl(home.images[0]);
   }
 
   return "https://via.placeholder.com/640x480?text=House";

@@ -13,6 +13,7 @@ import {
   verifyPayment,
 } from "../services/bookingService";
 import PropertyMapView from "../components/PropertyMapView";
+import { getUploadUrl } from "../utils/assetUrls";
 
 function HomeDetails() {
   const { homeId } = useParams();
@@ -135,11 +136,7 @@ function HomeDetails() {
 
   const images =
     home.images?.length > 0
-      ? home.images.map((img) =>
-          img.startsWith("http")
-            ? img
-            : `http://localhost:5000/uploads/${img}`
-        )
+      ? home.images.map((img) => getUploadUrl(img))
       : ["https://via.placeholder.com/800"];
 
   return (

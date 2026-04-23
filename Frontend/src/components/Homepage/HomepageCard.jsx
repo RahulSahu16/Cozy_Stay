@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { getUploadUrl } from "../../utils/assetUrls";
 
 function HomeCard({ home, type = "featured" }) {
   const navigate = useNavigate();
@@ -11,9 +12,7 @@ function HomeCard({ home, type = "featured" }) {
   };
 
   const imageSrc = home?.images?.[0]
-    ? home.images[0].startsWith("http")
-      ? home.images[0]
-      : `http://localhost:5000/uploads/${home.images[0]}`
+    ? getUploadUrl(home.images[0])
     : home?.imageURL
       ? home.imageURL
       : home?.image || "https://via.placeholder.com/400x300?text=House";
