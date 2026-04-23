@@ -15,11 +15,6 @@ export const register = async (payload) => {
   return data?.data || data;
 };
 
-export const loginWithGoogle = async (payload) => {
-  const { data } = await api.post("/auth/google", payload);
-  return data?.data || data;
-};
-
 export const login = async (payload) => {
   const { data } = await api.post("/auth/login", payload);
   return data?.data || data;

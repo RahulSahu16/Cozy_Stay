@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { sendSignupOtp, verifySignupOtp, register, loginWithGoogle } from "../../services/authService";
+import { sendSignupOtp, verifySignupOtp, register } from "../../services/authService";
 import { useAuth } from "../../hooks/useAuth";
-import { GOOGLE_CLIENT_ID, requestGoogleIdToken } from "../../utils/googleAuth";
 
 export default function Signup({ switchToLogin }) {
   const [step, setStep] = useState(1);
@@ -124,29 +123,6 @@ export default function Signup({ switchToLogin }) {
     handleCreateAccount();
   };
 
-  const handleGoogleSignup = async () => {
-    try {
-      setLoading(true);
-      setMessage("");
-      const idToken = await requestGoogleIdToken();
-      const data = await loginWithGoogle({ idToken });
-      if (!data?.token || !data?.user) {
-        throw new Error("Unexpected Google signup response from server");
-      }
-      login(data);
-      navigate("/");
-    } catch (error) {
-      const serverMessage =
-        error.response?.data?.message ||
-        error.response?.data?.error ||
-        error.message ||
-        "Google signup failed.";
-      setMessage(serverMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <form onSubmit={onSubmit} className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6">
 
@@ -260,33 +236,6 @@ export default function Signup({ switchToLogin }) {
           {!loading && step === 3 && "Create Account"}
         </button>
       </>
-
-      {GOOGLE_CLIENT_ID ? (
-        <>
-          <div className="flex items-center my-5">
-            <div className="flex-1 h-px bg-gray-300"></div>
-            <span className="px-3 text-gray-500 text-sm">or</span>
-            <div className="flex-1 h-px bg-gray-300"></div>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleGoogleSignup}
-            disabled={loading}
-            className="w-full border py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            <img
-              src="https://www.svgrepo.com/show/475656/google-color.svg"
-              className="w-5 h-5"
-            />
-            {loading ? "Please wait..." : "Signup with Google"}
-          </button>
-        </>
-      ) : (
-        <p className="mt-5 text-center text-xs text-gray-500">
-          Google signup will appear after `VITE_GOOGLE_CLIENT_ID` is configured.
-        </p>
-      )}
 
       {/* Switch */}
       <p className="text-center text-sm mt-5">

@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import { login as loginApi, loginWithGoogle } from "../../services/authService";
+import { login as loginApi } from "../../services/authService";
 import { useAuth } from "../../hooks/useAuth";
-import { GOOGLE_CLIENT_ID, requestGoogleIdToken } from "../../utils/googleAuth";
 
 export default function Login({ switchToSignup }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -35,29 +34,6 @@ export default function Login({ switchToSignup }) {
         error.response?.data?.error ||
         error.message ||
         "Login failed.";
-      setMessage(serverMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGoogleLogin = async () => {
-    try {
-      setLoading(true);
-      setMessage("");
-      const idToken = await requestGoogleIdToken();
-      const data = await loginWithGoogle({ idToken });
-      if (!data?.token || !data?.user) {
-        throw new Error("Unexpected Google login response from server");
-      }
-      login(data);
-      navigate("/");
-    } catch (error) {
-      const serverMessage =
-        error.response?.data?.message ||
-        error.response?.data?.error ||
-        error.message ||
-        "Google login failed.";
       setMessage(serverMessage);
     } finally {
       setLoading(false);
@@ -128,34 +104,6 @@ export default function Login({ switchToSignup }) {
       >
         {loading ? "Logging in..." : "Login"}
       </button>
-
-      {GOOGLE_CLIENT_ID ? (
-        <>
-          <div className="flex items-center my-5">
-            <div className="flex-1 h-px bg-gray-300"></div>
-            <span className="px-3 text-gray-500 text-sm">or</span>
-            <div className="flex-1 h-px bg-gray-300"></div>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleGoogleLogin}
-            disabled={loading}
-            className="w-full border py-2 rounded-lg flex items-center justify-center gap-2 transition disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            <img
-              src="https://www.svgrepo.com/show/475656/google-color.svg"
-              alt="google"
-              className="w-5 h-5 "
-            />
-            {loading ? "Please wait..." : "Login with Google"}
-          </button>
-        </>
-      ) : (
-        <p className="mt-5 text-center text-xs text-gray-500">
-          Google login will appear after `VITE_GOOGLE_CLIENT_ID` is configured.
-        </p>
-      )}
 
       {/* Switch to Signup */}
       <p className="text-center text-sm mt-5">
